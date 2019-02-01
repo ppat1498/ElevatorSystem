@@ -98,10 +98,10 @@ public class Elevator_inPanel {
 	    System.out.println("Client: Packet sent.\n");
 	}
 	
-	public static void print() {
-		for( ; ;) {
+	public void print() {
+		Scanner in = new Scanner(System.in);
 			System.out.println("Please select a floor between 1-10");
-			Scanner in = new Scanner(System.in);
+			
 			int reqestedFloorNumber = in.nextInt();
 			if(reqestedFloorNumber < 10) {
 				sendDestinationRequest(0, reqestedFloorNumber, 3, 1, generateDate());
@@ -111,10 +111,11 @@ public class Elevator_inPanel {
 			}
 			in.close();
 		}
-	}
+	
 	
 	public static void main(String[] args) {
-		print();
+		Elevator_inPanel p1 = new Elevator_inPanel();
+		p1.print();
 	}
 
 }

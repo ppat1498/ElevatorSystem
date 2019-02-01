@@ -1,9 +1,9 @@
 
 import java.io.*;
 import java.net.*;
-//import java.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
-//import java.util.Calendar;
+import java.util.Calendar;
 
 public class Elevator_model {
 	   DatagramPacket sendPacket, receivePacket;
@@ -62,26 +62,27 @@ public void receiveAndReply()
    System.out.println("received\n");
    
    int destOrArrival = data[2];
-   int floorNo = data[4];
+   setNextFloor(data[4]);
    //int UpOrDown = data[6];
    //int ID = data[8];
-   byte[] arr = Arrays.copyOfRange(data, 10, 17);
+   byte[] arr = Arrays.copyOfRange(data, 10, 18);
    String received = new String(arr,0,arr.length);
-   String str;
+   String str = "Idle";
    if(destOrArrival == 0) {
 	   System.out.println( "invalid destination packet");
    }
    
    else if(destOrArrival == 1){
 		   if(data[6] == 1) {
-			   str = "up";
+			   str = "going up to " + getNextFloor();
 		   }
-		   else {
-			   str = "down";
+		   else if(data[6] == 0){
+			   str = "going down to "+ getNextFloor();
 		   }
-		   System.out.println( "@ "+ received + " The Elevator is going "+ str);
-		   runMotor(getCurrentFloor(),floorNo);
-		   
+		   System.out.println( "@ "+ received + " The Elevator is "+ str);
+		   runMotor(getCurrentFloor(),getNextFloor());
+		   setCurrentFloor(getNextFloor());
+		   System.out.println( "@ "+ generateDate() + " The Elevator is now on floor " + getCurrentFloor());
 		   // Slow things down (wait 10 ms)
 		   
 		   try {
@@ -126,7 +127,7 @@ public void runMotor(int start,int end) {
 			       e.printStackTrace();
 			       System.exit(1);
 			   }
-	System.out.println( "closing doors...");
+	System.out.println( "Opening doors...");
 	time = 4000;
 	try {
 	       Thread.sleep(time);
@@ -149,6 +150,12 @@ public static int getNextFloor() {
 
 public static void setNextFloor(int floor) {
 	nextFloor = floor;
+}
+
+public static String generateDate() { 
+	Calendar cal = Calendar.getInstance();
+	SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+	return sdf.format(cal.getTime());
 }
 
 public static void main( String args[] )
