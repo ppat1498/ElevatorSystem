@@ -1,5 +1,3 @@
-package milestone_1;
-
 
 import java.util.Calendar;
 import java.util.Scanner;
@@ -13,7 +11,7 @@ public class Elevator_inPanel {
 	   static DatagramPacket sendPacket;
 	   static DatagramSocket sendSocket;
 	   
-	   public Elevator_inPanel(){
+	   public Elevator_inPanel(){					// represents the panel inside an elevator
 		   try {
 		        // Construct a datagram socket and bind it to any available 
 		        // port on the local host machine. This socket will be used to
@@ -37,7 +35,7 @@ public class Elevator_inPanel {
 		return sdf.format(cal.getTime());
 	}
 	
-	public static void sendDestinationRequest(int packetType,int floorNum, int UpDown,int ElevID, String SystemTime)
+	public static void sendDestinationRequest(int packetType,int floorNum, int UpDown,int ElevID, String SystemTime)	//get an input and send to scheduler
 	{
 	   // Prepare a DatagramPacket and send it via sendReceiveSocket
 	   // to port 5000 on the destination host.
@@ -99,25 +97,28 @@ public class Elevator_inPanel {
 
 	    System.out.println("Client: Packet sent.\n");
 	}
-	
+	Scanner in = new Scanner(System.in);
 	public void print() {
-		Scanner in = new Scanner(System.in);
+		
 			System.out.println("Please select a floor between 1-10");
 			
 			int reqestedFloorNumber = in.nextInt();
-			if(reqestedFloorNumber < 10) {
+			if(reqestedFloorNumber <= 10) {
 				sendDestinationRequest(0, reqestedFloorNumber, 3, 1, generateDate());
 			}
 			else {
 				System.out.println("Please enter a valid input");
 			}
-			in.close();
+			//in.close();
 		}
 	
 	
 	public static void main(String[] args) {
+		int i = 0;
 		Elevator_inPanel p1 = new Elevator_inPanel();
-		p1.print();
+		while (i <=20 ) {
+			p1.print();
+		}
 	}
 
 }

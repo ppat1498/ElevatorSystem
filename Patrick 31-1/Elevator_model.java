@@ -1,11 +1,11 @@
-package milestone_1;
+
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 
-public class Elevator_model {
+public class Elevator_model {		//this class creates a new elevator
 	   DatagramPacket sendPacket, receivePacket;
 	   static DatagramSocket sendSocket;
 	   static DatagramSocket receiveSocket;
@@ -33,7 +33,7 @@ public Elevator_model(int floor)
       System.exit(1);
    } 
 }
-public void receiveAndReply()
+public void receiveAndReply()			//this receives the message and sends a reply after motor has run
 {
 	 
 
@@ -110,31 +110,44 @@ public void receiveAndReply()
    		}
 }
 
-public void runMotor(int start,int end) {
-	System.out.println( "closing doors...");
+public void runMotor(int start,int end) {		//this method is used to run the motor to the destination floor with the appropriate wait times
 	int time = 4000;
-			try {
-			       Thread.sleep(time);
-			   } catch (InterruptedException e ) {
-			       e.printStackTrace();
-			       System.exit(1);
-			   }
-	System.out.println( "motor running...");
-	time = 1000 *( Math.abs(start-end));
-			try {
-			       Thread.sleep(time);
-			   } catch (InterruptedException e ) {
-			       e.printStackTrace();
-			       System.exit(1);
-			   }
-	System.out.println( "Opening doors...");
-	time = 4000;
-	try {
-	       Thread.sleep(time);
-	   } catch (InterruptedException e ) {
-	       e.printStackTrace();
-	       System.exit(1);
-	   }
+	if(start == end) {
+		System.out.println("Opening doors...");
+		try {
+		       Thread.sleep(time);
+		   } catch (InterruptedException e ) {
+		       e.printStackTrace();
+		       System.exit(1);
+		   }
+	}
+	
+	
+	else {
+		System.out.println("closing doors...");
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("motor running...");
+		time = 1000 * (Math.abs(start - end));
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		System.out.println("Opening doors...");
+		time = 4000;
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} 
+	}
 }
 public static int getCurrentFloor() {
 	return currentFloor;
@@ -160,11 +173,11 @@ public static String generateDate() {
 
 public static void main( String args[] )
 {
-   Elevator_model c = new Elevator_model(0);
+   Elevator_model c = new Elevator_model(1);
    int i = 1;
-   while(i <= 11) {
-   c.receiveAndReply();
-   i++;
+   while(i <= 100) {
+	   c.receiveAndReply();
+	   i++;
    }
    sendSocket.close();
    receiveSocket.close();

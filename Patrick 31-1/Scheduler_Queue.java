@@ -1,4 +1,3 @@
-package milestone_1;
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
@@ -6,13 +5,15 @@ import java.util.PriorityQueue;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class Scheduler_Queue {
+public class Scheduler_Queue {							//This class is used to set a "line up" of what floor is next in queue
 
    DatagramPacket sendPacket, receivePacket;
    static DatagramSocket sendSocket;
    static DatagramSocket receiveSocket;
    PriorityQueue<Integer> elevatorQ;
    static int currentFloor;
+   boolean isRequestPending = false;
+   
    
    public Scheduler_Queue(int start)
    {
@@ -37,7 +38,7 @@ public class Scheduler_Queue {
       } 
    }
 
-   public void receive()
+   public void receive()					//receives the messages from the floor, and decodes weather it is a destination or arrival, and if the user wants to go up or down
    {
       // Construct a DatagramPacket for receiving packets up 
       // to 100 bytes long (the length of the byte array).
@@ -76,6 +77,10 @@ public class Scheduler_Queue {
       //byte[] arr = Arrays.copyOfRange(data, 10, 17);
       //String received = new String(arr,0,arr.length);
       
+      if(data[0] == 2) {
+    	  isRequestPending = false;
+      }
+      
       if (destOrArrival == 0) {
     	  ScheduleRequest(floorNo,UpOrDown);
       }
@@ -86,7 +91,7 @@ public class Scheduler_Queue {
       
    }
 
-   private void dispatchRequest() {
+   private void dispatchRequest() {		//this tells the elevator to go to the certain floor
 	   if (!(elevatorQ.isEmpty())) {
 		int destination = elevatorQ.poll();
 		int direction = 2;
@@ -123,29 +128,38 @@ public class Scheduler_Queue {
 			System.exit(1);
 		}
 		System.out.println("Server: packet sent");
+		isRequestPending = true;
 	}
 		
 		// We're finished, so close the sockets.
 }
 
-private void ScheduleRequest(int floor, int direction) {
-	if(elevatorQ.isEmpty()) {
+private void ScheduleRequest(int floor, int direction) {		//this method is used to schedule a request, sending the elevator to go to the the floor
+	if(elevatorQ.isEmpty() ) {
+		if (isRequestPending == false) {
+			elevatorQ.add(floor);
+			dispatchRequest();
+		}
+		else {
+			elevatorQ.add(floor);
+		}
+	}
+	if(!(elevatorQ.isEmpty())){
 		elevatorQ.add(floor);
-		dispatchRequest();
 	}
 	
 }
-public static String generateDate() { 
+public static String generateDate() { 				//we created this method to generate a time stamp
 	Calendar cal = Calendar.getInstance();
 	SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
 	return sdf.format(cal.getTime());
 }
 
-public static int getCurrentFloor() {
+public static int getCurrentFloor() {				//to find out where the elevator currently is
 	return currentFloor;
 }
 
-public static void setCurrentFloor(int floor) {
+public static void setCurrentFloor(int floor) {		//to update the elevators current floor status
 	currentFloor = floor;
 }
 
@@ -153,9 +167,9 @@ public static void main( String args[] )
    {
       Scheduler_Queue c = new Scheduler_Queue(0);
       int i = 1;
-      while(i <= 11) {
-      c.receive();
-      i++;
+      while(i <= 100) {
+    	  c.receive();
+    	  i++;
       }
       sendSocket.close();
       receiveSocket.close();

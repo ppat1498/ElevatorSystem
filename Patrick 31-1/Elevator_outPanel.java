@@ -1,9 +1,10 @@
-package milestone_1;
+
 import java.util.Calendar;
 import java.util.Scanner;
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
+import java.util.Random;
 
 
 
@@ -12,8 +13,13 @@ public class Elevator_outPanel {
 	   static DatagramPacket sendPacket;
 	   static DatagramSocket sendSocket;
 	   static int PanelFloor;
-	   public Elevator_outPanel(int floor){
+	   boolean isUpLightOn = false;
+	   boolean isDownLightOn = false;
+	   
+	   
+	   public Elevator_outPanel(int floor){			//represents a panel outside the elevator
 		   setFloor(floor);
+		   
 		   try {
 		        // Construct a datagram socket and bind it to any available 
 		        // port on the local host machine. This socket will be used to
@@ -30,7 +36,7 @@ public class Elevator_outPanel {
 		return "Elevator_Panel [sendPacket=" + sendPacket + ", sendSocket="
 				+ sendSocket + "]";
 	}
-	public static void sendDestinationRequest(int packetType,int floorNum, int UpDown,int ElevID, String SystemTime)
+	public static void sendDestinationRequest(int packetType,int floorNum, int UpDown,int ElevID, String SystemTime)	//get an input and send to floor
 	{
 	   // Prepare a DatagramPacket and send it via sendReceiveSocket
 	   // to port 5000 on the destination host.
@@ -74,7 +80,7 @@ public class Elevator_outPanel {
 	   //  5000 - the destination port number on the destination host.
 	   try {
 	      sendPacket = new DatagramPacket(msg, msg.length,
-	                                      InetAddress.getLocalHost(),5000);
+	                                      InetAddress.getLocalHost(),15000);
 	   } catch (UnknownHostException e) {
 	      e.printStackTrace();
 	      System.exit(1);
@@ -98,6 +104,7 @@ public class Elevator_outPanel {
 	
 	public static void setFloor(int floor) {
 		PanelFloor = floor;
+		System.out.println("Floor panel created on floor " +  floor);
 	}
 	
 	public static String generateDate() { 
@@ -106,8 +113,9 @@ public class Elevator_outPanel {
 		return sdf.format(cal.getTime());
 	}
 	
+	Scanner reqDir = new Scanner(System.in);
 	public void print() {
-		Scanner reqDir = new Scanner(System.in);
+		
 			System.out.println("Enter the direction:");
 			String dir = reqDir.nextLine().toLowerCase();
 			if(dir.equals("up")){
@@ -121,12 +129,25 @@ public class Elevator_outPanel {
 			else {
 				System.out.println("invalid Input");
 		}
-		reqDir.close();
+		//reqDir.close();
+		
 	}
 	
 	public static void main(String[] args) {
-		Elevator_outPanel p1 = new Elevator_outPanel(4);
-		p1.print();
+		int i=0;
+		Random rand = new Random();
+		int n=0;
+		while (i<=20) {
+			n = rand.nextInt(10) + 1;
+			Elevator_outPanel p1 = new Elevator_outPanel(n);
+			p1.print();
+			n = rand.nextInt(10) + 1;
+			p1.setFloor(n);
+			p1.print();
+			i++;
+		}
+		
+
 	}
 
 }
